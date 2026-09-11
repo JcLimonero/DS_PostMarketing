@@ -1,0 +1,35 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "postiz-dev",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["run", "--filter", "./apps/orchestrator", "--filter", "./apps/frontend", "--parallel", "dev"],
+      "port": 4200
+    },
+    {
+      "name": "postiz-backend",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["dotenv", "-e", ".env", "--", "node", "--enable-source-maps", "apps/backend/dist/apps/backend/src/main.js"],
+      "port": 3000
+    },
+    {
+      "name": "postiz-dev-backend",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["run", "dev-backend"],
+      "port": 4200
+    },
+    {
+      "name": "postiz-frontend-only",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["run", "--filter", "./apps/frontend", "dev"],
+      "port": 4200
+    },
+    {
+      "name": "postiz-orchestrator",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["dotenv", "-e", ".env", "--", "node", "--enable-source-maps", "apps/orchestrator/dist/apps/orchestrator/src/main.js"],
+      "port": 3002
+    }
+  ]
+}
