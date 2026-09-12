@@ -10,9 +10,14 @@ name: Resolve staging conflicts
 #   STAGING_MERGE_KEY         private half of a write-enabled deploy key
 #   CLAUDE_CODE_OAUTH_TOKEN   Claude API key, despite the secret name
 
+# Scheduled runs are disabled on this fork: STAGING_MERGE_KEY and
+# CLAUDE_CODE_OAUTH_TOKEN are not configured here, so every scheduled run died
+# at "Preflight push" with `Permission denied (publickey)` and mailed out a
+# failure. Restore the `schedule:` block below once both secrets exist.
+#
+#  schedule:
+#    - cron: "*/10 * * * *"
 on:
-  schedule:
-    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 concurrency:

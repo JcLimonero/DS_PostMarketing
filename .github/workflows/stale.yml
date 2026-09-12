@@ -1,9 +1,13 @@
 name: Close inactive issues
 
+# Scheduled runs are disabled on this fork: the job below is guarded to
+# gitroomhq/postiz-app, so every scheduled run here queued a runner only to
+# skip. Restore the `schedule:` block if this ever runs on the upstream repo.
+#
+#  schedule:
+#    - cron: "*/30 * * * *"
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "*/30 * * * *"
 
 jobs:
   close-issues:
