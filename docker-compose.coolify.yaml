@@ -120,7 +120,7 @@ services:
       postiz-redis:
         condition: service_healthy
       temporal:
-        condition: service_started
+        condition: service_healthy
 
   postiz-postgres:
     image: postgres:17-alpine
@@ -164,6 +164,12 @@ services:
       - xpack.security.enabled=false
     volumes:
       - temporal-elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ['CMD', 'curl', '-fsS', 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s']
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
 
   temporal-postgresql:
     image: postgres:16
@@ -173,13 +179,26 @@ services:
       POSTGRES_PASSWORD: ${SERVICE_PASSWORD_TEMPORAL}
     volumes:
       - temporal-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U temporal -d postgres
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
   temporal:
     image: temporalio/auto-setup:1.28.1
     restart: always
     depends_on:
-      - temporal-postgresql
-      - temporal-elasticsearch
+      temporal-postgresql:
+        condition: service_healthy
+      temporal-elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'temporal', 'operator', 'cluster', 'health', '--address', 'temporal:7233']
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
     environment:
       - DB=postgres12
       - DB_PORT=5432
@@ -195,7 +214,13 @@ services:
     image: temporalio/ui:2.34.0
     restart: always
     depends_on:
-      - temporal
+      temporal:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:8080/']
+      interval: 30s
+      timeout: 5s
+      retries: 3
     environment:
       - TEMPORAL_ADDRESS=temporal:7233
 
